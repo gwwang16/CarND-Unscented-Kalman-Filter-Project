@@ -38,7 +38,29 @@ int main()
   vector<VectorXd> estimations;
   vector<VectorXd> ground_truth;
 
-  h.onMessage([&ukf,&tools,&estimations,&ground_truth](uWS::WebSocket<uWS::SERVER> ws, char *data, size_t length, uWS::OpCode opCode) {
+  // File to store estimation, measurements, ground truth and NIS
+  ofstream data_file;
+  // open file
+  data_file.open ("data_record.txt");
+  // write the file headers
+  data_file << "sensor_type" << "\t";
+  data_file << "dt" << "\t";
+  data_file << "px" << "\t";
+  data_file << "py" << "\t";
+  data_file << "vx" << "\t";
+  data_file << "vy" << "\t";
+  data_file << "estimate_x" << "\t";
+  data_file << "estimate_y" << "\t";
+  data_file << "estimate_vx" << "\t";
+  data_file << "estimate_vy" << "\t";
+  data_file << "rmse_x" << "\t";
+  data_file << "rmse_y" << "\t";
+  data_file << "rmse_vx" << "\t";
+  data_file << "rmse_vy" << "\t";
+  data_file << "NIS_lidar" << "\t";
+  data_file << "NIS_radar" << "\n";
+
+  h.onMessage([&ukf,&tools,&estimations,&ground_truth,&data_file](uWS::WebSocket<uWS::SERVER> ws, char *data, size_t length, uWS::OpCode opCode) {
     // "42" at the start of the message means there's a websocket message event.
     // The 4 signifies a websocket message
     // The 2 signifies a websocket event
@@ -139,7 +161,24 @@ int main()
           auto msg = "42[\"estimate_marker\"," + msgJson.dump() + "]";
           // std::cout << msg << std::endl;
           ws.send(msg.data(), msg.length(), uWS::OpCode::TEXT);
-	  
+
+        // Save the recorded data
+        data_file << sensor_type << "\t";
+        data_file << ukf.time_us_ << "\t";
+        data_file << x_gt << "\t";
+        data_file << y_gt << "\t";
+        data_file << vx_gt << "\t";
+        data_file << vy_gt << "\t";
+        data_file << p_x << "\t";
+        data_file << p_y << "\t";
+        data_file << v1 << "\t";
+        data_file << v2 << "\t";
+        data_file << RMSE(0) << "\t";
+        data_file << RMSE(1) << "\t";
+        data_file << RMSE(2) << "\t";
+        data_file << RMSE(3) << "\t";
+        data_file << ukf.NIS_lidar_ << "\t";
+        data_file << ukf.NIS_radar_ << "\n";
         }
       } else {
         

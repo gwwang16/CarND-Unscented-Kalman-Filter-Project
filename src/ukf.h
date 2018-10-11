@@ -67,7 +67,9 @@ public:
   ///* Sigma point spreading parameter
   double lambda_;
 
-
+  // Check consistency of laser and radar sensors
+  double NIS_lidar_;
+  double NIS_radar_;
 
   /**
    * Constructor
