@@ -237,13 +237,6 @@ void UKF::Prediction(double delta_t) {
   /*****predict mean and covariance*****/
 
   x_.setZero();
-  // set weights
-  weights_(0) = lambda_/(lambda_+n_aug_);
-  for (int i=1; i<2*n_aug_+1; i++) {  //2n+1 weights
-    double weight = 0.5/(n_aug_+lambda_);
-    weights_(i) = weight;
-  }
-
   //predicted state mean
   for (int i = 0; i <2*n_aug_+1; i++) {  //iterate over sigma points
     x_ = x_ + weights_(i) * Xsig_pred_.col(i);
